@@ -1,10 +1,4 @@
 #!/bin/python
-
-#function ctrl_c() {
-#        echo "**You pressed Ctrl+C...Exiting"
-#	exit 0;
-#}
-
 import os 
 
 print ("################################################")
