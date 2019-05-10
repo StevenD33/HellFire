@@ -104,6 +104,10 @@ print ("###############################################")
 print ("IP routing table") 
 os.system('route')
 print ("###############################################")
+#print("Socket Investigation")
+#os.system('ss')
+#print ("###############################################")
+
 os.system('END=$(date +%s)')  #fonction timer 
 print ("Script completed in seconds :")
 
