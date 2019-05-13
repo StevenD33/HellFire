@@ -9,7 +9,7 @@ menu = ConsoleMenu("Hellfire")
 # Create some items
 # A CommandItem runs a console command
 
-audit_item = CommandItem("Run Audit on your system",  "python Audit.py")
+audit_item = CommandItem("Run Audit on your system",  "python Audit.py", should_exit=True)
 basic_hardening_item = CommandItem("Run Basic Hardening on your system",  "python Basic_Hardening.py")
 advanced_hardening_item = CommandItem("Run Advanced Hardening on your system",  "python Advanced_Hardening.py")
 personalised_hardening_item = CommandItem("Run Personalised Hardening on your system",  "python Personalised_Hardening.py")

@@ -1,8 +1,6 @@
 #!/bin/python
 import os 
-
-
-
+import subprocess as sp
 def audit_debian():
     print ("################################################")
     print ("################################################")
@@ -57,18 +55,6 @@ def audit_debian():
     print  ("Check Memory")
     os.system('free -h')
     print ("###############################################")
-    print  (" History (Commands)")
-    os.system('history')
-    print ("###############################################")
-    print ("Network Interfaces")
-    os.system('ifconfig -a')
-    print ("###############################################")
-    print  ("IPtable Information")
-    os.system('iptables -L -n -v')
-    print ("###############################################")
-    print ("\e[0;33m 13. Check Running Processes///// \e[0m")
-    os.system('ps -a')
-    print ("###############################################")
     print ("Check SSH Configuration")
     os.system('cat /etc/ssh/sshd_config')
     print ("###############################################")
@@ -91,22 +77,28 @@ def audit_debian():
     print ("List user names")
     os.system('cut -d: -f1 /etc/passwd')
     print ("###############################################")
-    print ("Check for null passwords")
-    users="$(cut -d: -f 1 /etc/passwd)"
-    for x in users:
-        os.system('passwd -S $x |grep "NP"')
-    print ("###############################################")
-    print ("IP routing table") 
-    os.system('route')
     print ("###############################################")
     #print("Socket Investigation")
     #os.system('ss')
     #print ("###############################################")
+    print ("#--------------------------------------------------------------------------------------------------------------")
+    print ("# SSH Setup")
+    print ("#--------------------------------------------------------------------------------------------------------------")
+    port_ssh = sp.getoutput('grep -E "Port " /etc/ssh/sshd_config')
 
-    os.system('END=$(date +%s)')  #fonction timer 
-    print ("Script completed in seconds :")
+    if port_ssh == "#Port 22":
+        print("SHD Config: Port is set to default (22).  Recommend change to a non-standard port to make your SSH server more difficult to find/notice.  (Remember to restart SSHD with /etc/init.d/ssh restart after making changes)")
+    else:
+        print(port_ssh)
 
+    ssh_listen_address = sp.getoutput('grep -E "ListenAddress ::" /etc/ssh/sshd_config')
+    if ssh_listen_address == "#ListenAddress ::":
+        print("SSHD Config: ListenAddress is set to default (all addresses).  SSH will listen on ALL available IP addresses.  Recommend change to a single IP to reduce the number of access points.  (Remember to restart SSHD with /etc/init.d/ssh restart after making changes)")
+    else:
+        print(ssh_listen_address)
+        
     print('END')
+
 
 
 
@@ -117,10 +109,10 @@ print (Distrib[2])
 
 
 if  'MANJARO' in Distrib[2] :
-   audit_manjaro()
+   audit_debian()
 if 'kali' in Distrib[2]:
     audit_debian()
 if 'debian' in Distrib[2] :
     audit_debian()
-if 'ubuntu' in Distrib[2] :
-    ubuntu_audit()
+#if 'ubuntu' in Distrib[2] :
+#    audit_ubuntu()
