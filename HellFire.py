@@ -1,6 +1,6 @@
 # Import the necessary packages
-from consolemenu import *
-from consolemenu.items import *
+# from consolemenu import *
+# from consolemenu.items import *
 from Audit import audit
 # Create the menu
 # menu = ConsoleMenu("Hellfire")
