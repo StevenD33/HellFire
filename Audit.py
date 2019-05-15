@@ -86,6 +86,7 @@ def audit():
         print ("#--------------------------------------------------------------------------------------------------------------")
         print ("# SSH Setup")
         print ("#--------------------------------------------------------------------------------------------------------------")
+        
         port_ssh = sp.getoutput('grep -E "Port " /etc/ssh/sshd_config')
 
         if port_ssh == "Port 22":
@@ -102,7 +103,7 @@ def audit():
 
         if permit_root_login != "PermitRootLogin no":
             print("SSHD Config: PermitRootLogin should be set to no (prefer log in as a non-root user, then sudo/su to root)")
-        else if:
+        else:
             print(permit_root_login)
         permit_empty_passwords = sp.getoutput('grep -E PermitEmptyPasswords /etc/ssh/sshd_config')
 
@@ -123,11 +124,6 @@ def audit():
             print("SSHD Config: Protocol should be set to 2 (unless older Protocol 1 is really needed).")
         else:
             print(sshd_protocol)
-
-        print(privilege_separation)
-        print(permit_empty_passwords)
-        print(permit_root_login)
-        print(sshd_protocol)
 
     
         print('END')
