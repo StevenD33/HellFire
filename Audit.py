@@ -27,7 +27,6 @@ def audit():
         os.system('sleep 3')
         print ("###############################################")
         print ("OK....HOSTNAME..lets move on...wait for it to finish:")
-        os.system('sleep 3')
         print ("Script Starts ;)")
         os.system('START=$(date +%s)') # add fonction pour timer 
         print  (" Linux Kernel Information")
@@ -89,17 +88,48 @@ def audit():
         print ("#--------------------------------------------------------------------------------------------------------------")
         port_ssh = sp.getoutput('grep -E "Port " /etc/ssh/sshd_config')
 
-        if port_ssh == "#Port 22":
+        if port_ssh == "Port 22":
             print("SHD Config: Port is set to default (22).  Recommend change to a non-standard port to make your SSH server more difficult to find/notice.  (Remember to restart SSHD with /etc/init.d/ssh restart after making changes)")
         else:
             print(port_ssh)
 
         ssh_listen_address = sp.getoutput('grep -E "ListenAddress ::" /etc/ssh/sshd_config')
-        if ssh_listen_address == "#ListenAddress ::":
+        if ssh_listen_address == "ListenAddress ::":
             print("SSHD Config: ListenAddress is set to default (all addresses).  SSH will listen on ALL available IP addresses.  Recommend change to a single IP to reduce the number of access points.")
         else:
             print(ssh_listen_address)
-            
+        permit_root_login = sp.getoutput('grep -E PermitRootLogin /etc/ssh/sshd_config')
+
+        if permit_root_login != "PermitRootLogin no":
+            print("SSHD Config: PermitRootLogin should be set to no (prefer log in as a non-root user, then sudo/su to root)")
+        else if:
+            print(permit_root_login)
+        permit_empty_passwords = sp.getoutput('grep -E PermitEmptyPasswords /etc/ssh/sshd_config')
+
+        if permit_empty_passwords != "PermitEmptyPasswords no":
+            print("SSHD Config: PermitEmptyPasswords should be set to no (all users must use passwords/keys). ")
+        else:
+            print(permit_empty_passwords)
+
+        privilege_separation = sp.getoutput('grep -E UsePrivilegeSeparation /etc/ssh/sshd_config')
+
+        if privilege_separation != "UsePrivilegeSeparation yes" :
+            print("SSHD Config: UsePrivilegeSeparation should be set to yes (to chroot most of the SSH code, unless on older RHEL). ")
+        else:
+            print(privilege_separation)
+        sshd_protocol = sp.getoutput('grep -E Protocol /etc/ssh/sshd_config')
+
+        if sshd_protocol != "Protocol 2"  :
+            print("SSHD Config: Protocol should be set to 2 (unless older Protocol 1 is really needed).")
+        else:
+            print(sshd_protocol)
+
+        print(privilege_separation)
+        print(permit_empty_passwords)
+        print(permit_root_login)
+        print(sshd_protocol)
+
+    
         print('END')
 
 
@@ -119,4 +149,6 @@ def audit():
         audit_debian()
     #if 'ubuntu' in Distrib[2] :
     #    audit_ubuntu()
+
+
 
