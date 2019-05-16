@@ -2,54 +2,18 @@ import os
 import subprocess as sp
 
 
-x11_forwarding = sp.getoutput('grep -E X11Forwarding /etc/ssh/sshd_config | head -1')
+# allow_tcp_forwarding = sp.getoutput('grep -E AllowTcpForwarding /etc/ssh/sshd_config | head -1')
+# permit_open = sp.getoutput('grep -E PermitOpen /etc/ssh/sshd_config')
 
 
-if x11_forwarding != "X11Forwarding no"  :
-    print("SSHD Config: X11Forwarding should be set to no (unless needed).\n")
-else:
-    print(x11_forwarding)
-
-strict_modes = sp.getoutput('grep -E StrictModes /etc/ssh/sshd_config')
-
-
-if strict_modes != "StrictModes yes"  :
-    print("SSHD Config: StrictModes should be set to yes (to check file permissions of files such as ~/.ssh, ~/.ssh/authorized_keys etc).\n")
-else:
-    print(strict_modes)
+# if allow_tcp_forwarding != "AllowTcpForwarding no"  :
+#     if permit_open == "":
+#         print("SSHD Config: AllowTcpForwarding has been explicitly set to something other than no, but no PermitOpen setting has been specified.\n This means any user that can connect to a shell or a forced-command based session that allows open port-forwarding, can port forward to any other accessible host on the network (authorized users can probe or launch attacks on remote servers via SSH port-forwarding and make it appear that connections are coming from this server).  Recommend disabling this feature by adding [AllowTcpForwarding no], or if port forwarding is required, providing a list of allowed host:ports entries with PermitOpen.  For example [PermitOpen sql.myhost.com:1433 mysql.myhost.com:3306]. ")
+# else:
+#     print(allow_tcp_forwarding)
+#     print(permit_open)
 
 
 
-ignore_rhosts = sp.getoutput('grep -E IgnoreRhosts /etc/ssh/sshd_config')
-
-
-if ignore_rhosts != "IgnoreRhosts yes"  :
-    print("SSHD Config: IgnoreRhosts should be set to yes (this method of Authentication should be avoided).\n")
-else:
-    print(ignore_rhosts)
-
-host_base_authentication = sp.getoutput('grep -E HostbasedAuthentication /etc/ssh/sshd_config | head -1')
-
-
-if host_base_authentication != "HostbasedAuthentication no"  :
-    print("SSHD Config: HostbasedAuthentication should be set to no (this method of Authentication should be avoided).\n")
-else:
-    print(host_base_authentication)
-
-rhost_rsa_authentication = sp.getoutput('grep -E RhostsRSAAuthentication /etc/ssh/sshd_config')
-
-
-if rhost_rsa_authentication != "RhostsRSAAuthentication no"  :
-    print("SSHD Config: RhostsRSAAuthentication should be set to no (this method of Authentication should be avoided).\n")
-else:
-    print(rhost_rsa_authentication)
-
-gateway_ports = sp.getoutput('grep -E GatewayPorts /etc/ssh/sshd_config')
-if gateway_ports != "GatewayPorts no" :
-    print("SSHD Config: GatewayPorts is configured.  These allow listening on non-localhost addresses on the server.  This is disabled by default, but has been added to the config file.  Recommend remove this setting unless needed.\n")
-else:
-    print(gateway_ports)
-
-
-
-
+sp.getoutput("chmod +x ./bash_script/authentication.sh")
+sp.call("./bash_script/authentication.sh")

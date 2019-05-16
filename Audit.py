@@ -28,100 +28,55 @@ def audit():
         print ("###############################################")
         print ("OK....HOSTNAME..lets move on...wait for it to finish:")
         print ("Script Starts ;)")
-        os.system('START=$(date +%s)') # add fonction pour timer 
-        print  (" Linux Kernel Information")
-        os.system('uname -a')
-        print ("###############################################")
-        print  (" Current User and ID information")
-        os.system('whoami')
-        os.system('id')
-        print ("###############################################")
-        print ("Linux Distribution Information")
-        os.system('lsb_release -a')
-        print ("###############################################")
-        print  ("List Current Logged In Users")
-        os.system('w')
-        print ("###############################################")
-        print ("HOSTNAME uptime Information")
-        os.system('uptime')
-        print ("###############################################")
-        print  ("Running Services")
-        os.system('service --status-all |grep "+"')
-        print ("###############################################")
-        print  ("Active internet connections and open ports")
-        os.system('netstat -natp')
-        print ("###############################################")
-        print  ("Check Available Space")
-        os.system('df')
-        print ("###############################################")
-        print  ("Check Memory")
-        os.system('free -h')
-        print ("###############################################")
-        print ("Check SSH Configuration")
-        os.system('cat /etc/ssh/sshd_config')
-        print ("###############################################")
-        print ("###############################################")
-        print ("Network Parameters")
-        os.system('cat /etc/sysctl.conf')
-        print ("###############################################")
-        print ("Password Policies")
-        os.system('cat /etc/pam.d/common-password')
-        print ("###############################################")
-        print (" Check your Source List file")
-        os.system('cat /etc/apt/sources.list')
-        print ("###############################################")
-        print  ("Check for broken dependencies")
-        os.system('apt-get check')
-        print ("###############################################")
-        print  ("MOTD banner message")
-        os.system('cat /etc/motd')
-        print ("###############################################")
-        print ("List user names")
-        os.system('cut -d: -f1 /etc/passwd')
-        print ("###############################################")
-        print ("###############################################")
-        #print("Socket Investigation")
-        #os.system('ss')
-        #print ("###############################################")
+        
+        print("#------------------------------------------------------------------------------------------------------------------------------")
+        print("# PASSWORD-BASED LOGIN HASH CHECK")
+        print("#------------------------------------------------------------------------------------------------------------------------------")
+
+
+        sp.getoutput("chmod +x ./bash_script/password.sh")
+        sp.call("./bash_script/password.sh")
+
+
         print ("#--------------------------------------------------------------------------------------------------------------")
         print ("# SSH Setup")
         print ("#--------------------------------------------------------------------------------------------------------------")
         
         port_ssh = sp.getoutput('grep -E "Port " /etc/ssh/sshd_config')
 
-        if port_ssh == "Port 22":
-            print("SHD Config: Port is set to default (22).  Recommend change to a non-standard port to make your SSH server more difficult to find/notice.  (Remember to restart SSHD with /etc/init.d/ssh restart after making changes)")
+        if port_ssh != "Port 22":
+            print("SHD Config: Port is set to default (22).  Recommend change to a non-standard port to make your SSH server more difficult to find/notice.  (Remember to restart SSHD with /etc/init.d/ssh restart after making changes)\n")
         else:
             print(port_ssh)
 
         ssh_listen_address = sp.getoutput('grep -E "ListenAddress ::" /etc/ssh/sshd_config')
-        if ssh_listen_address == "ListenAddress ::":
-            print("SSHD Config: ListenAddress is set to default (all addresses).  SSH will listen on ALL available IP addresses.  Recommend change to a single IP to reduce the number of access points.")
+        if ssh_listen_address != "ListenAddress ::":
+            print("SSHD Config: ListenAddress is set to default (all addresses).  SSH will listen on ALL available IP addresses.  Recommend change to a single IP to reduce the number of access points.\n")
         else:
             print(ssh_listen_address)
         permit_root_login = sp.getoutput('grep -E PermitRootLogin /etc/ssh/sshd_config')
 
         if permit_root_login != "PermitRootLogin no":
-            print("SSHD Config: PermitRootLogin should be set to no (prefer log in as a non-root user, then sudo/su to root)")
+            print("SSHD Config: PermitRootLogin should be set to no (prefer log in as a non-root user, then sudo/su to root)\n")
         else:
             print(permit_root_login)
         permit_empty_passwords = sp.getoutput('grep -E PermitEmptyPasswords /etc/ssh/sshd_config')
 
         if permit_empty_passwords != "PermitEmptyPasswords no":
-            print("SSHD Config: PermitEmptyPasswords should be set to no (all users must use passwords/keys). ")
+            print("SSHD Config: PermitEmptyPasswords should be set to no (all users must use passwords/keys). \n")
         else:
             print(permit_empty_passwords)
 
         privilege_separation = sp.getoutput('grep -E UsePrivilegeSeparation /etc/ssh/sshd_config')
 
         if privilege_separation != "UsePrivilegeSeparation yes" :
-            print("SSHD Config: UsePrivilegeSeparation should be set to yes (to chroot most of the SSH code, unless on older RHEL). ")
+            print("SSHD Config: UsePrivilegeSeparation should be set to yes (to chroot most of the SSH code, unless on older RHEL).\n ")
         else:
             print(privilege_separation)
         sshd_protocol = sp.getoutput('grep -E Protocol /etc/ssh/sshd_config')
 
         if sshd_protocol != "Protocol 2"  :
-            print("SSHD Config: Protocol should be set to 2 (unless older Protocol 1 is really needed).")
+            print("SSHD Config: Protocol should be set to 2 (unless older Protocol 1 is really needed).\n")
         else:
             print(sshd_protocol)
         x11_forwarding = sp.getoutput('grep -E X11Forwarding /etc/ssh/sshd_config | head -1')
@@ -172,7 +127,30 @@ def audit():
         else:
             print(gateway_ports)
 
+        permit_tunnel = sp.getoutput('grep -E PermitTunnel /etc/ssh/sshd_config')
+        if permit_tunnel != "PermitTunnel no"  :
+            print("SSHD Config: PermitTunnel is configured.  This allows point-to-point device forwarding and Virtual Tunnel software such as VTun to be used.  This is disabled by default, but has been added to the config file.  Recommend remove this setting unless needed.\n")
+        else:
+            print(permit_tunnel)
 
+        Subsystem = sp.getoutput('grep -E "Subsystem" /etc/ssh/sshd_config')
+
+
+        if Subsystem != "#Subsystem	sftp	/usr/lib/ssh/sftp-server"  :
+            print("SSHD Config: Comment out Subsystem SFTP (unless needed).  While enabled, any user with SSH shell access can browse the filesystem and transfer files using SFTP/SCP. \n")
+        else:
+            print(Subsystem)
+    
+        allow_tcp_forwarding = sp.getoutput('grep -E AllowTcpForwarding /etc/ssh/sshd_config | head -1')
+        permit_open = sp.getoutput('grep -E PermitOpen /etc/ssh/sshd_config')
+
+
+        if allow_tcp_forwarding != "AllowTcpForwarding no"  :
+            if permit_open == "":
+                print("SSHD Config: AllowTcpForwarding has been explicitly set to something other than no, but no PermitOpen setting has been specified.\n This means any user that can connect to a shell or a forced-command based session that allows open port-forwarding, can port forward to any other accessible host on the network (authorized users can probe or launch attacks on remote servers via SSH port-forwarding and make it appear that connections are coming from this server).  Recommend disabling this feature by adding [AllowTcpForwarding no], or if port forwarding is required, providing a list of allowed host:ports entries with PermitOpen.  For example [PermitOpen sql.myhost.com:1433 mysql.myhost.com:3306]. ")
+        else:
+            print(allow_tcp_forwarding)
+            print(permit_open)
 
     
         print('END')
