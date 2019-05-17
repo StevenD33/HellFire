@@ -1,19 +1,37 @@
-import os
-import subprocess as sp
+import subprocess
 
+#BASIC UPGRADE
+subprocess.call("apt-get update -y".split())
+subprocess.call("apt-get upgrade -y".split())
+subprocess.call("apt-get autoremove -y".split())
+subprocess.call("apt-get autoclean -y".split())
 
-# allow_tcp_forwarding = sp.getoutput('grep -E AllowTcpForwarding /etc/ssh/sshd_config | head -1')
-# permit_open = sp.getoutput('grep -E PermitOpen /etc/ssh/sshd_config')
+important_services = ["openssh-server", "samba", "telnetd"] # make sure that they are installed and updated
 
+print("basic updates done! downloading tools!")
 
-# if allow_tcp_forwarding != "AllowTcpForwarding no"  :
-#     if permit_open == "":
-#         print("SSHD Config: AllowTcpForwarding has been explicitly set to something other than no, but no PermitOpen setting has been specified.\n This means any user that can connect to a shell or a forced-command based session that allows open port-forwarding, can port forward to any other accessible host on the network (authorized users can probe or launch attacks on remote servers via SSH port-forwarding and make it appear that connections are coming from this server).  Recommend disabling this feature by adding [AllowTcpForwarding no], or if port forwarding is required, providing a list of allowed host:ports entries with PermitOpen.  For example [PermitOpen sql.myhost.com:1433 mysql.myhost.com:3306]. ")
-# else:
-#     print(allow_tcp_forwarding)
-#     print(permit_open)
+subprocess.call("apt-get install unattended-upgrades -y".split())
+subprocess.call("dpkg-reconfigure -plow unattended-upgrades".split())
+tools_array = ["libpam-cracklib", "nmap", "gufw", "rkhunter", "chkrootkit", "auditd", "bum", "clamtk"]
+tools = "apt-get install " + ' '.join([str(x) for x in tools_array]) + " -y"
+subprocess.call(tools.split())
 
+#UPDATE FIREFOX
+print("tools downloaded! updating firefox!")
+subprocess.call("killall firefox".split())
+subprocess.call("apt-get remove firefox -y".split())
+subprocess.call("apt-get install firefox -y".split())
 
+#RUN PROGRAMS
+subprocess.call("software-properties-gtk".split())
+subprocess.call("gufw")
+subprocess.call("chkrootkit")
+subprocess.call("auditctl -e 1".split())
 
-sp.getoutput("chmod +x ./bash_script/authentication.sh")
-sp.call("./bash_script/authentication.sh")
+#CONFIGURE ANTIVIRUS
+subprocess.call("freshclam".split()) #updates antivirus definitions
+# subprocess.call("clamtk".split())
+
+#UPDATE DIST
+print("updating dist....this may take a while")
+subprocess.call("apt-get dist-upgrade -y".split())8 correct, 4 incorrect
