@@ -6,7 +6,7 @@ subprocess.call("apt-get upgrade -y".split())
 subprocess.call("apt-get autoremove -y".split())
 subprocess.call("apt-get autoclean -y".split())
 
-important_services = ["openssh-server", "samba", "telnetd"] # make sure that they are installed and updated
+important_services = ["openssh-server", "samba", "telnetd"] 
 
 print("basic updates done! downloading tools!")
 
@@ -30,8 +30,7 @@ subprocess.call("auditctl -e 1".split())
 
 #CONFIGURE ANTIVIRUS
 subprocess.call("freshclam".split()) #updates antivirus definitions
-# subprocess.call("clamtk".split())
 
 #UPDATE DIST
 print("updating dist....this may take a while")
-subprocess.call("apt-get dist-upgrade -y".split())8 correct, 4 incorrect
+subprocess.call("apt-get dist-upgrade -y".split())
