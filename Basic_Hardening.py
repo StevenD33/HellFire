@@ -127,7 +127,7 @@ subprocess.call("crontab -l".split())
 
 p = subprocess.Popen("ls /etc/cron*", stdout=subprocess.PIPE, shell=True)
 out,erro = p.communicate()
-print out
+print (out)
 
 #LOOK IN rc.local
 p = subprocess.Popen("cat /etc/rc.local".split(), stdout=subprocess.PIPE)
