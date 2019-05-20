@@ -65,7 +65,7 @@ def main_menu():
 # Execute menu
 def exec_menu(choice):
     os.system('clear')
-    ch = choice.lower()
+    ch = choice.int()
     if ch == '':
         menu_actions['main_menu']()
     else:
@@ -84,17 +84,6 @@ def menu1():
 # Menu 2
 def menu2():
     basic_hardening()
-
-def menu3():
-    print ("Hello Menu 2 !\n")
-    choice = input(" >>  ")
-    exec_menu(choice)
-    return
-def menu4():
-    print ("Hello Menu 2 !\n")
-    choice = input(" >>  ")
-    exec_menu(choice)
-    return
 
 
 # Back to main menu
