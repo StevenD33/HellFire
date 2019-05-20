@@ -65,7 +65,7 @@ def main_menu():
 # Execute menu
 def exec_menu(choice):
     os.system('clear')
-    ch = choice.int()
+    ch = choice()
     if ch == '':
         menu_actions['main_menu']()
     else:
