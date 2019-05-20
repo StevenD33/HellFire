@@ -2,6 +2,7 @@
 # from consolemenu import *
 # from consolemenu.items import *
 from Audit import audit
+from Basic_Hardening import basic_hardening
 # Create the menu
 # menu = ConsoleMenu("Hellfire")
 
@@ -82,10 +83,7 @@ def menu1():
 
 # Menu 2
 def menu2():
-    print ("Hello Menu 2 !\n")
-    choice = input(" >>  ")
-    exec_menu(choice)
-    return
+    basic_hardening()
 
 def menu3():
     print ("Hello Menu 2 !\n")
