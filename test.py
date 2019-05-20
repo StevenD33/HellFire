@@ -1,36 +1,24 @@
 import subprocess
+import os.path
 
-#BASIC UPGRADE
-subprocess.call("apt-get update -y".split())
-subprocess.call("apt-get upgrade -y".split())
-subprocess.call("apt-get autoremove -y".split())
-subprocess.call("apt-get autoclean -y".split())
 
-important_services = ["openssh-server", "samba", "telnetd"] 
 
-print("basic updates done! downloading tools!")
 
-subprocess.call("apt-get install unattended-upgrades -y".split())
-subprocess.call("dpkg-reconfigure -plow unattended-upgrades".split())
-tools_array = ["libpam-cracklib", "nmap", "gufw", "rkhunter", "chkrootkit", "auditd", "bum", "clamtk"]
-tools = "apt-get install " + ' '.join([str(x) for x in tools_array]) + " -y"
-subprocess.call(tools.split())
+subprocess.call("passwd -l root".split())
+print("root has been locked!")
 
-#UPDATE FIREFOX
-print("tools downloaded! updating firefox!")
-subprocess.call("killall firefox".split())
-subprocess.call("apt-get remove firefox -y".split())
-subprocess.call("apt-get install firefox -y".split())
+#/etc/security/access.conf -:root: ALL EXCEPT LOCAL
+if os.path.exists("/etc/security/access.conf") == True:
+    with open("/etc/security/access.conf", "a") as myfile:
+        myfile.write("\n-:root: ALL EXCEPT LOCAL")
+    print("access.conf edited!")
+else:
+    print("/etc/security/access.conf not found!")
 
-#RUN PROGRAMS
-subprocess.call("software-properties-gtk".split())
-subprocess.call("gufw")
-subprocess.call("chkrootkit")
-subprocess.call("auditctl -e 1".split())
+if os.path.exists("/etc/lightdm/lightdm.conf") == True:
+    with open("/etc/lightdm/lightdm.conf", "a") as myfile:
+        myfile.write("\nallow-guest=false")
 
-#CONFIGURE ANTIVIRUS
-subprocess.call("freshclam".split()) #updates antivirus definitions
-
-#UPDATE DIST
-print("updating dist....this may take a while")
-subprocess.call("apt-get dist-upgrade -y".split())
+    print("guest locked!")
+else:
+    print("/etc/lightdm/lightdm.conf does not exist")
