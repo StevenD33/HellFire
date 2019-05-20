@@ -1,7 +1,7 @@
 import subprocess
 import os.path
 
-# PASSWORD CONFIG
+print('PASSWORD CONFIG')
 
 
 # /etc/pam.d/common-password, /etc/pam.d/common-auth, and /etc/login.defs
@@ -10,7 +10,7 @@ subprocess.call("cp /etc/pam.d/common-password /etc/pam.d/common-password-backup
 subprocess.call("cp /etc/pam.d/common-auth /etc/pam.d/common-auth-backup".split())
 subprocess.call("cp /etc/login.defs /etc/login_backup.defs".split())
 
-#read both files
+print('read both files')
 common_pass = open("/etc/pam.d/common-password","r+")
 common_auth = open("/etc/pam.d/common-auth","r+")
 login = open("/etc/login.defs","r+")
@@ -18,7 +18,7 @@ login = open("/etc/login.defs","r+")
 
 
 text = common_pass.read().strip("\n").split("\n")
-#remove potentially offending lines
+print('remove potentially offending lines')
 for i in range(len(text)):
     line = text[i]
     if ("password" in line) == True:
@@ -33,7 +33,7 @@ common_pass.write(text)
 common_pass.truncate()
 common_pass.close()
 
-#EDITING common-auth
+print('EDITING common-auth')
 text = common_auth.read().strip("\n").split("\n")
 text.append("auth required pam_tally.so deny=5 unlock_time=900 onerr=fail audit even_deny_root_account silent")
 text = "\n".join([str(x) for x in text])
@@ -43,7 +43,7 @@ common_auth.write(text)
 common_auth.truncate()
 common_auth.close()
 
-#EDITING login
+print('EDITING login')
 text = login.read().strip("\n").split("\n")
 for i in range(len(text)):
     line = text[i]
@@ -61,6 +61,6 @@ login.write(text)
 login.truncate()
 login.close()
 
-#LOCK DOWN ON /etc/shadow
+print('LOCK DOWN ON /etc/shadow')
 
 subprocess.call("chmod o-r /etc/shadow".split())
