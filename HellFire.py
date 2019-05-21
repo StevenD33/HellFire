@@ -61,7 +61,7 @@ def main_menu():
     if choice == "1":
         audit()
     elif choice == "2":
-            basic_hardening()
+        basic_hardening()
 
 
 

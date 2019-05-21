@@ -35,7 +35,7 @@ def audit():
         print("#------------------------------------------------------------------------------------------------------------------------------")
 
 
-        sp.getoutput("chmod +x ./bash_script/password.sh")
+        os.system("chmod +x ./bash_script/password.sh")
         sp.call("./bash_script/password.sh")
 
 
