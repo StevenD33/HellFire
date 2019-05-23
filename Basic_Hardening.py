@@ -4,10 +4,12 @@ import os.path
 def basic_hardening():
 
 
+
 	subprocess.call("apt-get update -y".split())
 	subprocess.call("apt-get upgrade -y".split())
 	subprocess.call("apt-get autoremove -y".split())
 	subprocess.call("apt-get autoclean -y".split())
+
 
 	important_services = ["openssh-server", "samba", "telnetd"] 
 

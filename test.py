@@ -2,6 +2,63 @@ import subprocess
 import os.path
 
 
+subprocess.call("cp /etc/pam.d/common-password /etc/pam.d/common-password-backup".split())
+subprocess.call("cp /etc/pam.d/common-auth /etc/pam.d/common-auth-backup".split())
+subprocess.call("cp /etc/login.defs /etc/login_backup.defs".split())
+
+print('read both files')
+common_pass = open("/etc/pam.d/common-password","r+")
+common_auth = open("/etc/pam.d/common-auth","r+")
+login = open("/etc/login.defs","r+")
+
+
+
+text = common_pass.read().strip("\n").split("\n")
+print('remove potentially offending lines')
+for i in range(len(text)):
+    line = text[i]
+    if ("password" in line) == True:
+        text[i] = ""
+
+text.append("password    [success=1 default=ignore]  pam_unix.so obscure use_authtok sha512 shadow remeber=5")
+text.append("password    requisite           pam_cracklib.so retry=3 minlen=8 difok=3 reject_username minclass=3 maxrepeat=2 ucredit=-1 lcredit=-1 dcredit=-1 ocredit=-1")
+text.append("password    requisite           pam_pwhistory.so use_authtok remember=24 enforce_for_root")
+text = '\n'.join([str(x) for x in text])
+common_pass.seek(0)
+common_pass.write(text)
+common_pass.truncate()
+common_pass.close()
+print('EDITING common-auth')
+text = common_auth.read().strip("\n").split("\n")
+text.append("auth required pam_tally.so deny=5 unlock_time=900 onerr=fail audit even_deny_root_account silent")
+text = "\n".join([str(x) for x in text])
+
+common_auth.seek(0)
+common_auth.write(text)
+common_auth.truncate()
+common_auth.close()
+
+print('EDITING login')
+text = login.read().strip("\n").split("\n")
+for i in range(len(text)):
+    line = text[i]
+    if ("PASS_MIN_DAYS" in line) == True:
+        text[i] = "PASS_MIN_DAYS 10"
+    elif ("PASS_WARN_AGE" in line) == True:
+        text[i] = "PASS_WARN_AGE 7"
+    elif ("PASS_MAX_DAYS" in line) == True:
+        text[i] = "PASS_MAX_DAYS 90"
+
+text = "\n".join([str(x) for x in text])
+
+login.seek(0)
+login.write(text)
+login.truncate()
+login.close()
+
+print('LOCK DOWN ON /etc/shadow')
+
+subprocess.call("chmod o-r /etc/shadow".split())
 
 
 
@@ -40,7 +97,7 @@ subprocess.call("apt-get dist-upgrade -y".split())
 if os.path.exists("/etc/security/access.conf") == True:
     with open("/etc/security/access.conf", "a") as myfile:
         myfile.write("\n-:root: ALL EXCEPT LOCAL")
-    print("access.conf edited!")
+        print("access.conf edited!")
 else:
     print("/etc/security/access.conf not found!")
 
@@ -52,12 +109,16 @@ if os.path.exists("/etc/lightdm/lightdm.conf") == True:
 else:
     print("/etc/lightdm/lightdm.conf does not exist")
 
+
 subprocess.call("crontab -l".split())
+
+
 
 
 p = subprocess.Popen("ls /etc/cron*", stdout=subprocess.PIPE, shell=True)
 out,erro = p.communicate()
 print (out)
+
 
 p = subprocess.Popen("cat /etc/rc.local".split(), stdout=subprocess.PIPE)
 output, err = p.communicate()
@@ -65,6 +126,7 @@ text = output
 
 for line in text:
     if len(line) > 0 and line.strip(" ")[0] != "#" and line.strip(" ") != "exit 0" and line.strip(" ") != "":
+
         print("something is in /etc/rc.local ... you should check it out")
 
 
@@ -291,3 +353,4 @@ text = '\n'.join([str(x) for x in text])
 subprocess.call("chmod 750 csh".split())
 subprocess.call("chmod 750 tcsh ".split())
 subprocess.call("chmod 750 ksh".split())
+

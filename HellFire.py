@@ -60,10 +60,12 @@ def main_menu():
     choice = input(" >>  ")
     if choice == "1":
         audit()
+
     if choice == "2":
         basic_hardening()
     else:
         print("Invalid selection, please try again.\n")
+
 
 
 # Main Program
