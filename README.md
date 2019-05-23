@@ -1,6 +1,6 @@
 ﻿# HellFire
 
-![enter image description here](/images/HellFire.png)
+![enter image description here](https://github.com/StevenDias33/HellFire/blob/master/Ressources/images/Hellfire.jpg)
 
 ![enter image description here](https://img.shields.io/badge/Release-V1.0-success.svg)
 
@@ -16,4 +16,3 @@ it is currently in 1.0 more features will come later
 
 
 
-> Written with [StackEdit](https://stackedit.io/).
