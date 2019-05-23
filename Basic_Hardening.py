@@ -2,21 +2,8 @@ import subprocess
 import os.path
 
 def basic_hardening():
-    def remove_malicous_software(malwares):
-    	attack = "apt-get purge " + ' '.join([str(x) for x in malwares]) + " -y"
-	subprocess.call(attack.split())
 
-    def bad(terms, directory):
-	    for term in terms:
-		    print("Searching for '{}'\n".format(term))
-		    found = subprocess.Popen(str("sudo find {} -iname {}".format(directory, term)).split(), stdout = subprocess.PIPE).stdout.readlines()
-		    if found != []:
-			    print("'{}' found in the following locations:\n".format(term))
-			    for item in found:
-				    print(item)
-			    print("\n")
 
-    #BASIC UPGRADE
     subprocess.call("apt-get update -y".split())
     subprocess.call("apt-get upgrade -y".split())
     subprocess.call("apt-get autoremove -y".split())
@@ -32,19 +19,16 @@ def basic_hardening():
     tools = "apt-get install " + ' '.join([str(x) for x in tools_array]) + " -y"
     subprocess.call(tools.split())
 
-    #UPDATE FIREFOX
     print("tools downloaded! updating firefox!")
     subprocess.call("killall firefox".split())
     subprocess.call("apt-get remove firefox -y".split())
     subprocess.call("apt-get install firefox -y".split())
 
-    #RUN PROGRAMS
     subprocess.call("software-properties-gtk".split())
     subprocess.call("gufw")
     subprocess.call("chkrootkit")
     subprocess.call("auditctl -e 1".split())
-    #CONFIGURE ANTIVIRUS
-    subprocess.call("freshclam".split()) #updates antivirus definitions
+    subprocess.call("freshclam".split()) 
 
     #UPDATE DIST
     print("updating dist....this may take a while")
@@ -97,6 +81,19 @@ def basic_hardening():
         print("guest locked!")
     else:
         print("/etc/lightdm/lightdm.conf does not exist")
+        def remove_malicous_software(malwares):
+        	attack = "apt-get purge " + ' '.join([str(x) for x in malwares]) + " -y"
+	        subprocess.call(attack.split())
+
+        def bad(terms, directory):
+	        for term in terms:
+		        print("Searching for '{}'\n".format(term))
+		        found = subprocess.Popen(str("sudo find {} -iname {}".format(directory, term)).split(), stdout = subprocess.PIPE).stdout.readlines()
+		        if found != []:
+			        print("'{}' found in the following locations:\n".format(term))
+			        for item in found:
+				        print(item)
+			        print("\n")
 
     attack_array = ["at","netcat","wireshark","sipcrack","sucrack","john","hydra","ophcrack","tcpdump","whoopsie","at","gnome-games-common","gbrainy"]
     remove_malicous_software(attack_array);
