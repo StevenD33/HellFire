@@ -51,14 +51,6 @@ def basic_hardening():
     subprocess.call("apt-get dist-upgrade -y".split())
 
 
-    print('LOCK DOWN ON /etc/shadow')
-
-    subprocess.call("chmod o-r /etc/shadow".split())
-
-
-    subprocess.call("passwd -l root".split())
-    print("root has been locked!")
-
     #/etc/security/access.conf -:root: ALL EXCEPT LOCAL
     if os.path.exists("/etc/security/access.conf") == True:
         with open("/etc/security/access.conf", "a") as myfile:
@@ -89,9 +81,6 @@ def basic_hardening():
     for line in text:
         if len(line) > 0 and line.strip(" ")[0] != "#" and line.strip(" ") != "exit 0" and line.strip(" ") != "":
             print("something is in /etc/rc.local ... you should check it out")
-
-    subprocess.call("passwd -l root".split())
-    print("root has been locked!")
 
 
     if os.path.exists("/etc/security/access.conf") == True:
