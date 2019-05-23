@@ -132,7 +132,7 @@ def basic_hardening():
     #LOOK IN rc.local
     p = subprocess.Popen("cat /etc/rc.local".split(), stdout=subprocess.PIPE)
     output, err = p.communicate()
-    text = output.split("\n")
+    text = output
 
     for line in text:
         if len(line) > 0 and line.strip(" ")[0] != "#" and line.strip(" ") != "exit 0" and line.strip(" ") != "":
