@@ -3,7 +3,7 @@ import os.path
 
 def basic_hardening():
 
-
+	#Update dépot + paquet
 
 	subprocess.call("apt-get update -y".split())
 	subprocess.call("apt-get upgrade -y".split())
@@ -20,7 +20,7 @@ def basic_hardening():
 	tools_array = ["libpam-cracklib", "nmap", "gufw", "rkhunter", "chkrootkit", "auditd", "clamtk"]
 	tools = "apt-get install " + ' '.join([str(x) for x in tools_array]) + " -y"
 	subprocess.call(tools.split())
-
+	#install outils essentiel pour l'hardening et l'audit 
 	print("tools downloaded! updating firefox!")
 	subprocess.call("killall firefox".split())
 	subprocess.call("apt-get remove firefox -y".split())
@@ -53,9 +53,12 @@ def basic_hardening():
 	else:
 	    print("/etc/lightdm/lightdm.conf does not exist")
 
+
+		#Listing crontab jobs 
+
 	subprocess.call("crontab -l".split())
 
-
+	#recherche dans le /etc 
 	p = subprocess.Popen("ls /etc/cron*", stdout=subprocess.PIPE, shell=True)
 	out,erro = p.communicate()
 	print (out)
@@ -68,7 +71,7 @@ def basic_hardening():
 	    if len(line) > 0 and line.strip(" ")[0] != "#" and line.strip(" ") != "exit 0" and line.strip(" ") != "":
 	        print("something is in /etc/rc.local ... you should check it out")
 
-
+	# editing acess.conf et light dm 
 	if os.path.exists("/etc/security/access.conf") == True:
 	    with open("/etc/security/access.conf", "a") as myfile:
 	        myfile.write("\n-:root: ALL EXCEPT LOCAL")
@@ -83,6 +86,8 @@ def basic_hardening():
 	    print("guest locked!")
 	else:
 	    print("/etc/lightdm/lightdm.conf does not exist")
+
+		#Fonction pour remove malware et logiciel suspect 
 	    def remove_malicous_software(malwares):
 	        attack = "apt-get purge " + ' '.join([str(x) for x in malwares]) + " -y"
 	        subprocess.call(attack.split())
@@ -108,6 +113,7 @@ def basic_hardening():
 	for item in not_allowed:
 	    bad([item], "/home")
 
+	# Editing Kernel et désactivation de certaines conf
 	subprocess.call("sysctl kernel.randomize_va_space=1".split())
 	subprocess.call("sysctl net.ipv4.conf.all.rp_filter=1".split())
 	subprocess.call("sysctl net.ipv4.conf.all.accept_source_route=0".split())
@@ -138,14 +144,14 @@ def basic_hardening():
 
 	installed = out
 
-
+	#supression toutes les clés SSH 
 	proc = subprocess.Popen("rm -rf /home/*/.ssh", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 	out, erro = proc.communicate()
 
-
+	#Backup 
 	subprocess.call("cp /etc/ssh/sshd_config /etc/ssh/sshd_config_backup".split())
 
-
+	#modif du fichier en enlevant les mauvaises conf 
 	if os.path.exists("/etc/ssh/sshd_config") == True:
 	    file = open("/etc/ssh/sshd_config","r+")
 	    text = file.read().strip("\n").split("\n")
@@ -178,7 +184,7 @@ def basic_hardening():
 	            text[i] = ""
 	        if ("Protocol 2" in line) == True:
 	            text[i] = ""
-
+		#rajout des bonnes config 
 	    text.append("PermitEmptyPasswords no")
 	    text.append("PermitRootLogin no")
 	    text.append("UsePrivilegeSeparation yes")
@@ -193,7 +199,7 @@ def basic_hardening():
 	    text.append("X11Forwarding no")
 	    text.append("Protocol 1")
 
-
+	#ecriture dans le fichier 
 	    text = '\n'.join([str(x) for x in text])
 
 	    file.seek(0)
@@ -204,7 +210,7 @@ def basic_hardening():
 	    subprocess.call("sudo /etc/init.d/ssh restart".split())
 	else:
 	    print("/etc/ssh/sshd_config does not exist")
-
+		#modif firewall 
 	subprocess.call("ufw allow ssh".split())
 	subprocess.call("ufw allow http".split())
 	subprocess.call("ufw deny 23".split())
@@ -213,7 +219,7 @@ def basic_hardening():
 	subprocess.call("ufw limit OpenSSH".split())
 
 	subprocess.call("cp /etc/sysctl.conf /etc/sysctl_conf_backup".split())
-
+	#tcp
 	if os.path.exists("/etc/sysctl.conf") == True:
 	    file = open("/etc/sysctl.conf","r+")
 	    text = file.read().strip("\n").split("\n")
@@ -229,7 +235,7 @@ def basic_hardening():
 	    subprocess.call("sysctl -p".split())
 	else:
 	    print("/etc/sysctl.conf does not exist")
-
+	#FTP 
 	subprocess.call("sudo apt-get install vsftpd -y".split()) 
 	subprocess.call("cp /etc/vsftpd.conf /etc/vsftpd_backup.conf".split())
 
@@ -237,7 +243,7 @@ def basic_hardening():
 
 	    file = open("/etc/vsftpd.conf","r+")
 	    text = file.read().strip("\n").split("\n")
-
+		#supression ligne interdite 
 	    for i in range(len(text)):
 	        line = text[i]
 	        if ("anonymous_enable" in line) == True:
@@ -249,14 +255,14 @@ def basic_hardening():
 	        if ("chroot_local_user" in line) == True:
 	            text[i] = ""
 
-
+		#ajout des bonnes lignes 
 	    text.append("anonymous_enable=NO")
 	    text.append("local_enable=YES")
 	    text.append("write_enable=YES ")
 	    text.append("chroot_local_user=YES")
 
 	    text = '\n'.join([str(x) for x in text])
-
+		#ecriture 
 	    file.seek(0)
 	    file.write(text)
 	    file.truncate()
@@ -288,7 +294,7 @@ def basic_hardening():
 	#file.write(text)
 	#file.truncate()
 	#file.close()
-
+	#desactivation des autres shell si il y'en a 
 	subprocess.call("chmod 750 csh".split())
 	subprocess.call("chmod 750 tcsh ".split())
 	subprocess.call("chmod 750 ksh".split())

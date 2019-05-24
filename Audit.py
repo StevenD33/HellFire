@@ -157,7 +157,7 @@ def audit():
         print('END')
 
 
-
+# detection OS + choix en fontion de l'os
 
     Distrib = os.uname()
 
